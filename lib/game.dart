@@ -108,7 +108,7 @@ class _GameScreenState extends State<GameScreen> {
   void talk(String sub) {
     setState(() {
       isAction = true;
-      isPlayerTalk = true; // เปิดให้กล่องคำพูดแสดง
+      isPlayerTalk = true; 
       playerSub = '$sub';
     });
 
@@ -127,17 +127,12 @@ class _GameScreenState extends State<GameScreen> {
         // สุ่มตัวอักษร
         for (int i = 0; i < count; i++) {
           if (bunnyBag.length >= 20) break;
-          // สุ่มเลือกตัวอักษรจาก letterScores
           Map<String, dynamic> letter =
               letterScores[random.nextInt(letterScores.length)];
-          // ตรวจสอบว่าเราสามารถจั่วตัวอักษรนั้นได้หรือไม่
           if (letter['count'] > 0) {
-            // เพิ่มตัวอักษรที่สุ่มลงใน list
             bunnyBag.add(letter['letter']);
-            // ลดจำนวนของตัวอักษรที่จั่วออก
             letter['count']--;
           } else {
-            // หากตัวอักษรหมดจำนวน ให้ทำการสุ่มใหม่
             i--;
           }
         }
@@ -165,17 +160,6 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void drink(int count) {
-    //   showModalBottomSheet(
-    //     context: context,
-    //     builder: (context) {
-    //       return Container(
-    //         height: 100,
-    //         width: double.infinity,
-    //         padding: EdgeInsets.all(16),
-    //         child: Text("Hello from Bottom Sheet!"),
-    //       );
-    //     },
-    //   );
     if (bunnyBag.length + selectedWord.length <= bagSize - count) {
       setState(() {
         List<String> letter = ['A', 'E', 'I', 'O', 'U'];
@@ -197,22 +181,14 @@ class _GameScreenState extends State<GameScreen> {
   void draw(int count) {
     if (bunnyBag.length + selectedWord.length <= bagSize - count) {
       setState(() {
-        // สุ่มตัวอักษร
         for (int i = 0; i < count; i++) {
           if (bunnyBag.length >= 20) break;
-          // สุ่มเลือกตัวอักษรจาก letterScores
           Map<String, dynamic> letter =
               letterScores[random.nextInt(letterScores.length)];
-
-          // ตรวจสอบว่าเราสามารถจั่วตัวอักษรนั้นได้หรือไม่
           if (letter['count'] > 0) {
-            // เพิ่มตัวอักษรที่สุ่มลงใน list
             bunnyBag.add(letter['letter']);
-            // ลดจำนวนของตัวอักษรที่จั่วออก
             letter['count']--;
           } else {
-            // หากตัวอักษรหมดจำนวน ให้ทำการสุ่มใหม่
-
             i--;
           }
         }
@@ -238,9 +214,9 @@ class _GameScreenState extends State<GameScreen> {
           if (isValid && word.length > 1) {
             // ถ้าคำมีความหมาย และมากกว่า 1 ตัวอักษร
             playerSub = "เอาไปกิน";
-            enemyHp = max(0, enemyHp - (word.length - 1)); // ลบ hp ศัตรู
-            wordUsed.add(word); // เพิ่มคำศัพท์ลงในคำเอาไปสะสมใน Lib
-            selectedWord.clear(); // เคลียร์ตัวอักษรบนแครอท
+            enemyHp = max(0, enemyHp - (word.length - 1)); 
+            wordUsed.add(word); 
+            selectedWord.clear(); 
           } else {
             playerSub = "ไม่ได้ผล";
             bunnyPic = "Stand";
@@ -250,7 +226,6 @@ class _GameScreenState extends State<GameScreen> {
             setState(() {
               isAction = true;
             });
-            // รอ 2 วินาทีแล้วซ่อนกล่องคำพูด
             Future.delayed(const Duration(seconds: 2), () {
               setState(() {
                 isPlayerTalk = false;
@@ -265,7 +240,6 @@ class _GameScreenState extends State<GameScreen> {
               isPlayerTalk = true;
               bunnyPic = "Stand";
             });
-            // รอ 2 วินาทีแล้วซ่อนกล่องคำพูด
             Future.delayed(const Duration(seconds: 2), () {
               setState(() {
                 isPlayerTalk = false;
@@ -289,12 +263,10 @@ class _GameScreenState extends State<GameScreen> {
         .doc(uid)
         .collection('Library');
 
-    // 🔍 ค้นหาเอกสารที่มีคำนี้
     QuerySnapshot querySnapshot =
         await wordBankRef.where('word', isEqualTo: word).get();
 
     if (querySnapshot.docs.isNotEmpty) {
-      // 🔥 ถ้ามีคำนี้อยู่แล้วให้เพิ่มค่า times
       DocumentSnapshot existingDoc = querySnapshot.docs.first;
       int currentTime = (existingDoc['times'] ?? 0) as int; // ป้องกัน null
 
@@ -302,7 +274,6 @@ class _GameScreenState extends State<GameScreen> {
         'times': currentTime + 1,
       });
     } else {
-      // 🔥 ถ้ายังไม่มีคำนี้ให้เพิ่มเข้าไปใหม่ (ใช้ doc แทน add)
       await wordBankRef.doc(word).set({
         'word': word,
         'times': 1,
@@ -334,17 +305,14 @@ class _GameScreenState extends State<GameScreen> {
         Map<String, dynamic>? userData =
             userSnapshot.data() as Map<String, dynamic>?;
 
-        int currentHighScore =
-            userData?['highScore'] ?? 0; // ถ้าไม่มีค่าให้เป็น 0
+        int currentHighScore = userData?['highScore'] ?? 0;
 
         if (route > currentHighScore) {
-          // อัปเดตเฉพาะ highScore ถ้า route มากกว่าเดิม
           await userRef.set({
             'highScore': route,
           }, SetOptions(merge: true));
         }
       } else {
-        // ถ้าไม่มีข้อมูลเดิม ให้สร้างใหม่
         await userRef.set({
           'highScore': route,
         });
@@ -373,7 +341,7 @@ class _GameScreenState extends State<GameScreen> {
         });
       }
     }
-    return null; // ถ้าไม่มี user หรือไม่มีข้อมูล return null
+    return null; 
   }
 
   Future<void> fetchEnemyData(String enemy) async {
@@ -402,12 +370,12 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   void dispose() {
-    isWalking = false; // หยุดการเดินก่อนออกจากเกม
+    isWalking = false; 
     super.dispose();
   }
 
   void MoveNextState() async {
-    if (!mounted) return; // ถ้า Widget ถูกปิดไปแล้ว หยุดการทำงานทันที
+    if (!mounted) return; 
 
     setState(() {
       isWalking = true;
@@ -419,9 +387,9 @@ class _GameScreenState extends State<GameScreen> {
     while (elapsed < 200) {
       await Future.delayed(Duration(milliseconds: 500));
       if (!isWalking || !mounted)
-        break; // ถ้าหยุดก่อน หรือหน้าเกมปิด ให้หยุดเลย
+        break; 
 
-      if (!mounted) return; // เช็คอีกครั้งว่า Widget ยังอยู่ไหม
+      if (!mounted) return; 
       setState(() {
         isAction = true;
         bunnyPic = (bunnyPic == "Walk1") ? "Walk2" : "Walk1";
@@ -432,7 +400,7 @@ class _GameScreenState extends State<GameScreen> {
       elapsed += 30;
     }
 
-    if (!mounted) return; // ป้องกัน setState() ถ้าหน้าถูกปิดไปแล้ว
+    if (!mounted) return; 
     setState(() {
       isWalking = false;
       isAction = true;
@@ -447,9 +415,8 @@ class _GameScreenState extends State<GameScreen> {
 
   void spawnEnemy() {
     setState(() {
-      // สุ่มพลังชีวิตและพลังโจมตีของศัตรู
       fetchEnemyData(encounter[state]);
-      isAction = true; // ล็อกการกระทำไว้ก่อนที่ศัตรูจะมาถึง
+      isAction = true; 
     });
     moveEnemy();
   }
@@ -457,23 +424,21 @@ class _GameScreenState extends State<GameScreen> {
   void moveEnemy() {
     // เริ่มต้นการเคลื่อนที่ของศัตรู
     Future.doWhile(() async {
-      // ใช้ Future.delayed เพื่อทำให้มันช้าลง
       await Future.delayed(
-          const Duration(milliseconds: 500)); // ปรับเวลาช้าเพิ่มขึ้น
+          const Duration(milliseconds: 500)); 
       if (enemyX < 50) {
         setState(() {
-          enemyX += 10; // เคลื่อนที่ไปข้างหน้า
+          enemyX += 10; 
         });
-        return true; // ดำเนินต่อไปในลูป
+        return true; 
       } else {
         setState(() {
           setState(() {
             isAction = true;
-            isEnemyTalk = true; // เปิดให้กล่องคำพูดแสดง
+            isEnemyTalk = true; 
             enemySub = 'มาสู้กัน!';
           });
 
-          // รอ 2 วินาทีแล้วซ่อนกล่องคำพูด
           Future.delayed(const Duration(seconds: 2), () {
             setState(() {
               isEnemyTalk = false;
@@ -487,21 +452,20 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void retreatEnemy() {
-    // เคลื่อนที่ถอยหลัง
     Future.doWhile(() async {
       await Future.delayed(
-          const Duration(milliseconds: 500)); // ปรับเวลาช้าเพิ่มขึ้น
+          const Duration(milliseconds: 500)); 
       if (enemyX > -100) {
         setState(() {
-          enemyX -= 10; // เคลื่อนที่ถอยหลัง
+          enemyX -= 10; 
         });
-        return true; // ดำเนินต่อไปในลูป
+        return true; 
       } else {
         setState(() {
           state++;
-          win(); // เรียก spawnEnemy เมื่อถึงจุดที่กำหนด
+          win(); 
         });
-        return false; // หยุดลูป
+        return false; 
       }
     });
   }
@@ -513,7 +477,6 @@ class _GameScreenState extends State<GameScreen> {
         isAction = true;
         enemySub = enemyTalk;
       });
-      // รอ 2 วินาทีแล้วโจมตี
       Future.delayed(const Duration(seconds: 2), () {
         setState(() {
           isAction = false;
@@ -521,7 +484,6 @@ class _GameScreenState extends State<GameScreen> {
           bunnyHp = max(0, bunnyHp - enemyAtk);
           enemyCooldown = 0;
 
-          // เช็คว่าแพ้หรือไม่
           if (bunnyHp <= 0) {
             gameOver();
           }
@@ -534,7 +496,6 @@ class _GameScreenState extends State<GameScreen> {
         enemySub =
             "ฉันจะโจมตีในอีก ${enemyBaseCooldown - enemyCooldown} เทิร์น";
       });
-      // รอ 2 วินาทีแล้วโจมตี
       Future.delayed(const Duration(seconds: 2), () {
         setState(() {
           isAction = false;
@@ -548,7 +509,7 @@ class _GameScreenState extends State<GameScreen> {
   void stop() {
     showDialog(
       context: context,
-      barrierDismissible: false, // ป้องกันการปิด Popup โดยไม่ตั้งใจ
+      barrierDismissible: false, 
       builder: (context) {
         return Dialog(
           backgroundColor: Colors.transparent,
@@ -591,10 +552,10 @@ class _GameScreenState extends State<GameScreen> {
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            Navigator.of(context).pop(); // ปิด Popup
+                            Navigator.of(context).pop(); 
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFB0E0E6), // สีพาสเทลฟ้า
+                            backgroundColor: Color(0xFFB0E0E6), 
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -611,11 +572,11 @@ class _GameScreenState extends State<GameScreen> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => HomeScreen()),
-                              (route) => false, // เคลียร์ stack ทั้งหมด
-                            ); // กลับไปหน้า Home
+                              (route) => false, 
+                            ); 
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFFCC9A6), // สีพาสเทลชมพู
+                            backgroundColor: Color(0xFFFCC9A6), 
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -686,7 +647,7 @@ class _GameScreenState extends State<GameScreen> {
   void gameOver() {
     showDialog(
       context: context,
-      barrierDismissible: false, // ป้องกันการกดออกโดยไม่กดปุ่ม
+      barrierDismissible: false, 
       builder: (BuildContext context) {
         return Dialog(
           backgroundColor: Colors.transparent,
@@ -725,7 +686,6 @@ class _GameScreenState extends State<GameScreen> {
                     SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
-                        // อัพเดทข้อมูลทุกอย่าง
                         updateHighScore(route - 1);
                         updateMoney(money);
                         wordUsed.forEach((word) {
@@ -735,8 +695,8 @@ class _GameScreenState extends State<GameScreen> {
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => HomeScreen()),
-                          (route) => false, // เคลียร์ stack ทั้งหมด
-                        ); // กลับไปหน้า Home
+                          (route) => false, 
+                        ); 
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFFFCC9A6),
@@ -808,7 +768,7 @@ class _GameScreenState extends State<GameScreen> {
   void win() {
     showDialog(
       context: context,
-      barrierDismissible: false, // ป้องกันการกดออกโดยไม่กดปุ่ม
+      barrierDismissible: false, 
       builder: (BuildContext context) {
         return Dialog(
           backgroundColor: Colors.transparent,
@@ -853,7 +813,7 @@ class _GameScreenState extends State<GameScreen> {
                           onPressed: () {
                             route++;
                             MoveNextState();
-                            Navigator.of(context).pop(); // ปิด Popup ก่อน
+                            Navigator.of(context).pop(); 
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF98DDCA),
@@ -874,13 +834,13 @@ class _GameScreenState extends State<GameScreen> {
                               postWord(word);
                             });
 
-                            Navigator.of(context).pop(); // ปิด Popup ก่อน
+                            Navigator.of(context).pop(); 
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => HomeScreen()),
-                              (route) => false, // เคลียร์ stack ทั้งหมด
-                            ); // กลับไปหน้า Home
+                              (route) => false, 
+                            ); 
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFFFCC9A6),
@@ -976,7 +936,7 @@ class _GameScreenState extends State<GameScreen> {
     pickWord(5);
 
     Future.delayed(Duration(milliseconds: 100), () {
-      if (mounted) MoveNextState(); // เรียกเฉพาะถ้าหน้ายังเปิดอยู่
+      if (mounted) MoveNextState(); 
     });
   }
 
