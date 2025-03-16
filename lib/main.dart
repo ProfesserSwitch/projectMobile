@@ -98,12 +98,33 @@ class CustomStartButton extends StatelessWidget {
         
         // 🥕 ปุ่มหลัก
         ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => authPage()),
-            );
-          },
+          onPressed: () async {
+  // แสดงหน้าโหลด (Popup)
+  showDialog(
+    context: context,
+    barrierDismissible: false, // ป้องกันการปิดระหว่างโหลด
+    builder: (context) {
+      return Center(
+        child: CircularProgressIndicator(
+          color: Colors.orange, // สีธีมของเกม
+        ),
+      );
+    },
+  );
+
+  // จำลองโหลดข้อมูล (เช่น โหลด Firebase หรือเตรียมข้อมูล)
+  await Future.delayed(Duration(seconds: 2));
+
+  // ปิดหน้าโหลด
+  Navigator.pop(context);
+
+  // ไปหน้า AuthPage
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => authPage()),
+  );
+},
+
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFFfabd98),
             foregroundColor: Colors.white,
