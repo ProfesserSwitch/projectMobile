@@ -24,48 +24,46 @@ class _registPageState extends State<registPage> {
       FirebaseFirestore.instance.collection('post');
 
   void signUserUp() async {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (passwordController.text != confirmPasswordController.text) {
+      // เช็คก่อนเปิด Popup
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match')),
+      );
+      return;
+    }
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
+        return const Center(child: CircularProgressIndicator());
       },
-    );
-  },
     );
 
     try {
-      if (passwordController.text != confirmPasswordController.text) {
-        if (context.mounted) Navigator.pop(context); // ปิด popup
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Passwords do not match')),
-        );
-        return;
-      }
-
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
 
-      await setDefaultUserData(userCredential.user); // เซ็ตค่าเริ่มต้นให้ User
+      await setDefaultUserData(userCredential.user);
 
-      if (context.mounted) {
-        await Future.delayed(
-            Duration(milliseconds: 300)); // ป้องกัน popup หายเร็วเกินไป
-        Navigator.pop(context); // ปิด popup
+      if (mounted) {
+        // ปิด popup หลังจากหน่วงเวลาเล็กน้อย
+        await Future.delayed(const Duration(milliseconds: 300));
+        if (mounted) Navigator.pop(context);
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => LoginScreen()),
         );
       }
     } on FirebaseAuthException catch (e) {
-      if (context.mounted) {
-        Navigator.pop(context); // ปิด popup
+      if (mounted) {
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context); // ปิด popup ถ้าเปิดอยู่
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.message ?? 'Registration failed')),
         );
@@ -85,7 +83,7 @@ class _registPageState extends State<registPage> {
         'carrotLenghtLv': 1,
         'bagSizeLv': 1,
         'drawCountLv': 1,
-        'highScore':0,
+        'highScore': 0,
       });
     }
   }
